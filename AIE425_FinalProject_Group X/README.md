@@ -7,38 +7,37 @@ AIE425_FinalProject_Group X/
 ├── AIE425_Intelligent Recommender Systems/
 │   ├── SECTION1_DimensionalityReduction/
 │   │   ├── code/
-│   │   │   ├── svd_analysis.ipynb
-│   │   │   ├── pca_mean_filling.ipynb
-│   │   │   ├── pca_mle.ipynb
-│   │   │   └── utils.ipynb
-│   │   ├── data/
-│   │   │   └── Movies_and_TV.csv (Excluded from git)
 │   │   ├── plots/
-│   │   ├── results/
 │   │   ├── tables/
 │   │   └── README_SECTION1.md
-│   │
 │   └── SECTION2_DomainRecommender/
-│       ├── code/
-│       │   ├── data_preprocessing.ipynb
-│       │   ├── content_based.ipynb
-│       │   ├── collaborative.ipynb
-│       │   ├── hybrid.ipynb
-│       │   └── main.ipynb
-│       └── README_SECTION2.md
-│
 ├── Statistical_Analysis/
-│   ├── Statistical_Analysis_Refactored.ipynb
-│   └── Results/
-│
 ├── requirements.txt
 └── README.md
 ```
 
-## Project Overview
+## Section 1: Dimensionality Reduction Analysis Results
 
-This repository contains the final project for the **AIE425 Intelligent Recommender Systems** course. the project is divided into:
+### 1. Visualization of Latent Factors
+**Scree Plot & Elbow Method:** used to determine the optimal $k=50$.
 
-1.  **Statistical Analysis:** Initial exploration and cleaning of the dataset.
-2.  **Section 1: Dimensionality Reduction:** Applying SVD and PCA to handle sparsity and predict ratings.
-3.  **Section 2: Domain Recommender:** (In Progress) Building specific recommender engines.
+![Scree Plot](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/svd_scree_plot.png)
+![Elbow Curve](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/truncated_svd_elbow.png)
+
+### 2. Latent Space
+Visualizing Users (Blue) and Items (Red) in the first 2 latent dimensions.
+
+![Latent Space](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/latent_space_visualization.png)
+
+### 3. Key Results Table
+
+| Metric | SVD ($k=50$) | KNN (Baseline) |
+| :--- | :--- | :--- |
+| **MAE** | **0.281** | 0.315 |
+| **RMSE** | **0.342** | 0.402 |
+| **Runtime** | ~6.0s | >60s |
+
+### 4. Robustness to Sparsity
+SVD performance degradation as data sparsity increases (Mean-Filling strategy).
+
+![Robustness](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/robustness_sparsity.png)
