@@ -41,3 +41,18 @@ Visualizing Users (Blue) and Items (Red) in the first 2 latent dimensions.
 SVD performance degradation as data sparsity increases (Mean-Filling strategy).
 
 ![Robustness](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/robustness_sparsity.png)
+
+### 5. PCA Mean-Filling Analysis
+Analysis of the dataset distribution and the mean-filling technique used for PCA.
+
+**Data Distribution & Sparsity:**
+The rating distribution (left) and user rating frequency (right) highlights the long-tail nature of the dataset.
+![Rating Distribution](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/rating_distribution.png)
+
+**Mean-Filling Visualization:**
+Comparison of a subset of the ratings matrix before (raw) and after mean-filling.
+![Filling Comparison](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/filling_comparison.png)
+
+**PCA Analysis:**
+Includes the distribution of item means, the covariance matrix of top items, and the scree plot showing eigenvalue decay.
+![PCA Analysis](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/plots/pca_analysis_combined.png)
