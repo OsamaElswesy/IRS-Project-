@@ -7,10 +7,9 @@ AIE425_FinalProject_Group 11/
 ├── AIE425_Intelligent Recommender Systems/
 │   ├── SECTION1_DimensionalityReduction/
 │   │   ├── code/
-│   │   │   ├── svd_analysis.ipynb
+│   │   │   ├── SVD_Analysis .ipynb
 │   │   │   ├── pca_mean_filling.ipynb
-│   │   │   ├── pca_mle.ipynb
-│   │   │   └── utils.ipynb
+│   │   │   └── pca_mle .ipynb
 │   │   ├── data/
 │   │   ├── results/
 │   │   │   ├── plots/
@@ -20,11 +19,16 @@ AIE425_FinalProject_Group 11/
 │   │   │   │   ├── robustness_sparsity.png
 │   │   │   │   ├── rating_distribution.png
 │   │   │   │   ├── filling_comparison.png
-│   │   │   │   └── pca_analysis_combined.png
+│   │   │   │   ├── pca_analysis_combined.png
+│   │   │   │   └── prediction_comparison.png
 │   │   │   └── tables/
-│   │   │       ├── svd_predictions.csv
-│   │   │       ├── method_comparison_summary.csv
-│   │   │       └── computational_efficiency.csv
+│   │   │       ├── pca_eigenvalues_top5.csv
+│   │   │       ├── pca_eigenvalues_top10.csv
+│   │   │       ├── pca_peers_I1_top5.csv
+│   │   │       ├── pca_peers_I1_top10.csv
+│   │   │       ├── pca_peers_I2_top5.csv
+│   │   │       ├── pca_peers_I2_top10.csv
+│   │   │       └── pca_target_means.csv
 │   │   └── README_SECTION1.md
 │   └── SECTION2_Sleep Quality Improvement Recommendation Engine/
 │       ├── code/
@@ -56,11 +60,12 @@ This section focuses on applying **Dimensionality Reduction** techniques—speci
 ### 3. Methodology
 
 #### 3.1 Data Preparation
--   **Dataset:** Subset of Amazon Movies & TV ratings.
+-   **Dataset:** Amazon Movies & TV ratings (~8.7M ratings).
 -   **Filtering:** Retained the **Top 10,000** most active users and **Top 1,000** most popular items to ensure a dense core for analysis.
+-   **Target Items:** `B00PCSVODW` and `B005GISDXW`
 -   **Preprocessing:**
     -   Converted raw ratings to a User-Item Matrix.
-    -   **Imputation:** Applied **Item-Mean Filling** to handle missing values, effectively converting the sparse matrix into a dense format suitable for standard SVD.
+    -   **Imputation:** Applied **Item-Mean Filling** to handle missing values.
 
 #### 3.2 SVD Implementation
 We implemented **SVD (Singular Value Decomposition)** from scratch using Eigenvalue Decomposition of the correlation matrix ($R^T R$):
@@ -68,11 +73,21 @@ We implemented **SVD (Singular Value Decomposition)** from scratch using Eigenva
 -   **Orthogonality Check:** Verified $U^T U = I$ and $V^T V = I$ to ensure mathematical correctness.
 -   **Truncation:** Constructed low-rank approximations by keeping only the top $k$ singular values.
 
+#### 3.3 PCA Mean-Filling
+-   Computed item-wise covariance matrix on mean-centered data.
+-   Identified **Top-5** and **Top-10** peer items by covariance for target items.
+-   Predicted missing ratings using item-based collaborative filtering weighted by covariance.
+
+#### 3.4 PCA MLE (Maximum Likelihood Estimation)
+-   Computed pairwise covariance using MLE on overlapping user ratings only.
+-   Constructed covariance matrix for 1,002 items.
+-   Used Gaussian conditional distribution for prediction.
+
 ### 4. Key Findings
 
 #### 4.1 Optimal Latent Factors ($k$)
 -   **Selected $k = 50$**
--   **Justification:** Analysis of the **Elbow Curve** (RMSE vs. $k$) and **Variance Retained** plot showed that at $k=50$, the model captures approximately **90%** of the total variance. Increasing $k$ further yields diminishing returns in accuracy while increasing computational cost.
+-   **Justification:** Analysis of the **Elbow Curve** (RMSE vs. $k$) and **Variance Retained** plot showed that at $k=50$, the model captures approximately **90%** of the total variance.
 
 **Scree Plot & Elbow Method:**
 
@@ -87,7 +102,7 @@ Visualizing Users (Blue) and Items (Red) in the first 2 latent dimensions.
 #### 4.3 Prediction Performance
 -   **Targets:** Predicted ratings for items `B00PCSVODW` and `B005GISDXW`.
 -   **Accuracy:** The Truncated SVD model provided robust predictions (Scale 1-5).
--   **Comparison:** SVD predictions were comparable to **User-Based KNN** (Assignment 1 baseline), demonstrating that global latent factors can effectively approximate local neighborhood-based predictions.
+-   **Comparison:** SVD predictions were comparable to **User-Based KNN** baseline.
 
 | Metric | SVD ($k=50$) | KNN (Baseline) |
 | :--- | :--- | :--- |
@@ -103,7 +118,7 @@ SVD performance degradation as data sparsity increases (Mean-Filling strategy).
 #### 4.5 Cold-Start Analysis
 -   **Scenario:** Simulated "Cold-Start" users by hiding 80% of their ratings.
 -   **Method:** Used **Projection (Folding-in)** technique: $u_{new} = r_{new} V \Sigma^{-1}$.
--   **Result:** A **Hybrid Strategy** (50% SVD Projection + 50% Global Item Means) significantly reduced RMSE compared to pure SVD projection for users with very sparse history.
+-   **Result:** A **Hybrid Strategy** (50% SVD Projection + 50% Global Item Means) significantly reduced RMSE.
 
 #### 4.6 PCA Mean-Filling Analysis
 Analysis of the dataset distribution and the mean-filling technique used for PCA.
@@ -123,26 +138,28 @@ Includes the distribution of item means, the covariance matrix of top items, and
 
 ![PCA Analysis](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/results/plots/pca_analysis_combined.png)
 
+#### 4.7 Prediction Comparison
+Comparison of prediction methods across Top-5 and Top-10 peers.
+
+![Prediction Comparison](AIE425_Intelligent%20Recommender%20Systems/SECTION1_DimensionalityReduction/results/plots/prediction_comparison.png)
+
 ### 5. Comparative Analysis
 
-| Feature | SVD (Truncated) | PCA (Mean-Filled) | KNN (User-Based) |
-| :--- | :--- | :--- | :--- |
-| **Approach** | Matrix Factorization | Linear Transformation | Memory-Based Iteration |
-| **Sparsity Handling** | Requires Imputation | Requires Imputation | Native Handling |
-| **Scalability** | Good (Fast Inference) | Good (Fast Inference) | Poor (Slow Inference) |
-| **Space Complexity** | Moderate ($O(k \cdot (m+n))$) | Low (Covariance Matrix) | High (Full Matrix) |
-| **Cold-Start** | Projection Strategy | Projection Strategy | Re-computation |
+| Feature | SVD (Truncated) | PCA (Mean-Filled) | PCA (MLE) | KNN (User-Based) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Approach** | Matrix Factorization | Linear Transformation | Gaussian Conditional | Memory-Based Iteration |
+| **Sparsity Handling** | Requires Imputation | Requires Imputation | Overlap-only computation | Native Handling |
+| **Scalability** | Good (Fast Inference) | Good (Fast Inference) | Moderate | Poor (Slow Inference) |
+| **Space Complexity** | Moderate ($O(k \cdot (m+n))$) | Low (Covariance Matrix) | Low (Covariance Matrix) | High (Full Matrix) |
+| **Cold-Start** | Projection Strategy | Projection Strategy | Conditional Mean | Re-computation |
 
 **Conclusion:** SVD with Mean-Filling is the preferred method for this dataset due to its balance of accuracy, scalability, and ability to extract interpretable latent features.
 
 ### 6. Project Structure
 
--   `code/svd_analysis.ipynb`: The primary notebook containing the full implementation:
-    -   Data Loading & Cleaning
-    -   Full & Truncated SVD Implementation
-    -   Visualization (Scree Plots, Latent Space)
-    -   Rating Prediction & Evaluation
-    -   Sensitivity & Cold-Start Analysis
+-   `code/SVD_Analysis .ipynb`: Full SVD implementation with data loading, decomposition, visualization, and cold-start analysis.
+-   `code/pca_mean_filling.ipynb`: PCA with mean-filling imputation, covariance-based peer selection, and rating prediction.
+-   `code/pca_mle .ipynb`: PCA using MLE covariance estimation on overlapping users with Gaussian conditional prediction.
 -   `results/`: Directory containing generated prediction tables and plots.
 
 ## Section 2: Sleep Quality Improvement Recommendation Engine
