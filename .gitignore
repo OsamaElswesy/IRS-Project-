@@ -16,3 +16,5 @@ env/
 # System
 .DS_Store
 Thumbs.db
+
+AIE425_FinalProject_Group 11/AIE425_Intelligent Recommender Systems/SECTION1_DimensionalityReduction/results/pca_predictions.csv
